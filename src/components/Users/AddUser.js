@@ -23,7 +23,7 @@ const AddUser = (props) => {
     if (+enteredAge < 1) { //enteredAge is a string and we are comparing it with a number although js will execute it but to be on the safer side, adding + bcz it will convert enteredAge in a number 
       return;
     }
-    console.log(enteredUsername, enteredAge);
+    props.onAddUser(enteredUsername,enteredAge);
     setEnteredUsername("");
     setEnteredAge("");
   };
