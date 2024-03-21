@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Card from "../UI/Card";
 import "./AddUser.css";
 import Button from "../UI/Button";
@@ -6,28 +6,23 @@ import ErrorModal from "../UI/ErrorModal";
 import Wrapper from "../Helpers/Wrapper";
 
 const AddUser = (props) => {
-  const [enteredUsername, setEnteredUsername] = useState("");
-  const [enteredAge, setEnteredAge] = useState("");
+  const nameInputRef = useRef(); //the ref value which is being generated here is always an object which has a current property and current holds the actual value of the ref
+  const ageInputRef = useRef(); //initialized to undefined
+
   const [error, setError] = useState(); //initial value is undefined so no need to pass any initial value
-
-  const usernameChangeHandler = (event) => {
-    setEnteredUsername(event.target.value);
-  };
-
-  const ageChangeHandler = (event) => {
-    setEnteredAge(event.target.value);
-  };
 
   const addUserHandler = (event) => {
     event.preventDefault();
-    if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+    const enteredName = nameInputRef.current.value; //every input element has value property
+    const enteredUserage = ageInputRef.current.value;
+    if (enteredName.trim().length === 0 || enteredUserage.trim().length === 0) {
       setError({
         title: "Invalid input",
         message: "Please enter a valid name and age (non-empty values).",
       });
       return;
     }
-    if (+enteredAge < 1) {
+    if (+enteredUserage < 1) {
       //enteredAge is a string and we are comparing it with a number although js will execute it but to be on the safer side, adding + bcz it will convert enteredAge in a number
       setError({
         title: "Invalid age",
@@ -35,9 +30,9 @@ const AddUser = (props) => {
       });
       return;
     }
-    props.onAddUser(enteredUsername, enteredAge);
-    setEnteredUsername("");
-    setEnteredAge("");
+    props.onAddUser(enteredName, enteredUserage);
+    nameInputRef.current.value=""; //manipulatind DOM using refs is not good, we are not using react here
+    ageInputRef.current.value="";
   };
 
   const errorHandler = () => {
@@ -56,19 +51,9 @@ const AddUser = (props) => {
       <Card className="input">
         <form onSubmit={addUserHandler}>
           <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            type="text"
-            value={enteredUsername} //value ke through input will reflect the current state to submit ke baad state empty kar rhe hain upar wo is value ke through hi empty ho paengi
-            onChange={usernameChangeHandler}
-          />
+          <input id="username" type="text" ref={nameInputRef} />
           <label htmlFor="age">Age (Years)</label>
-          <input
-            id="age"
-            type="number"
-            value={enteredAge}
-            onChange={ageChangeHandler}
-          />
+          <input id="age" type="number" ref={ageInputRef} />
           <Button type="submit">Add User</Button>
         </form>
       </Card>
